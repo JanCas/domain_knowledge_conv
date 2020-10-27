@@ -1,8 +1,7 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense, BatchNormalization
 from tensorflow.keras import Input
 from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.metrics import Precision, Recall
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 from tensorflow.compat.v1 import ConfigProto, Session
 from numpy import floor
@@ -30,7 +29,8 @@ def Alex_Net(Input: Input) -> Sequential:
     model.add(Input)
 
     # 1ST layer
-    model.add(Conv2D(filters=96, strides=2, kernel_size=4, activation='relu'))
+    model.add(Conv2D(filters=96, strides=2, kernel_size=5, activation='relu'))
+    # model.add(BatchNormalization())
     # model.add(MaxPooling2D(pool_size=3, strides=2))
 
     # 2nd layer
@@ -41,7 +41,7 @@ def Alex_Net(Input: Input) -> Sequential:
     model.add(Conv2D(filters=384, padding='same', kernel_size=5, activation='relu'))
 
     # 4th layer
-    model.add(Conv2D(filters=384, padding='same', kernel_size=3, activation='relu'))
+    model.add(Conv2D(filters=256, padding='same', kernel_size=3, activation='relu'))
 
     # 5th layer
     model.add(Conv2D(filters=256, padding='same', kernel_size=3, activation='relu'))
@@ -55,6 +55,8 @@ def Alex_Net(Input: Input) -> Sequential:
     model.add(Dense(4096, activation='relu'))
     model.add(Dropout(.5))
     model.add(Dense(4096, activation='relu'))
+    model.add(Dropout(.4))
+    #model.add(Dense(2048, activation='relu'))
 
     # output layer
     model.add(Dense(1))
@@ -64,15 +66,16 @@ def Alex_Net(Input: Input) -> Sequential:
 
 model = Alex_Net(Input=data['input'])
 
-optimizer = SGD(lr=.0001)
+optimizer = SGD(lr=.01)
 METRICS = [
     'mean_squared_error',
+    'mean_absolute_error'
 #    Precision(name='precision'),
 #    Recall(name='recall')
 ]
 
 CALLBACKS = [
-    ReduceLROnPlateau(monitor='loss', patience=3, verbose=1, factor=.1, min_lr=.000000001)
+    ReduceLROnPlateau(monitor='loss', patience=3, verbose=1, factor=.1, min_lr=.00001)
 ]
 
 model.compile(loss='huber_loss', optimizer=optimizer, metrics=METRICS)
@@ -86,14 +89,18 @@ history = model.fit(
     callbacks=CALLBACKS
 )
 
+
+
 # evaluating the model
+model.evaluate(data['test'])
+
 fig, ax = plt.subplots(2, 1)
 ax[0].plot(history.history['loss'], color='b', label="Training loss")
 ax[0].plot(history.history['val_loss'], color='r', label="validation loss", axes=ax[0])
 legend = ax[0].legend(loc='best', shadow=True)
 
-ax[1].plot(history.history['accuracy'], color='b', label="Training accuracy")
-ax[1].plot(history.history['val_accuracy'], color='r', label="Validation accuracy")
+ax[1].plot(history.history['mean_squared_error'], color='b', label="mean squared error")
+ax[1].plot(history.history['val_mean_squared_error'], color='r', label="Validation accuracy")
 legend = ax[1].legend(loc='best', shadow=True)
 
 plt.show()
