@@ -136,7 +136,7 @@ def get_x_with_chemical_formula(x_df: DataFrame, final_size: tuple, chem_form: s
     return chem_form_array
 
 
-def generate_image_data_generators(material_prop: string, cbfv: string):
+def generate_image_data_generators(material_prop: string, cbfv: string) -> dict:
     """
     generate the keras image preprocessing whcih will be used in the fit function
     :return:
