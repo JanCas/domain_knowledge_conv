@@ -31,7 +31,7 @@ def Alex_Net(Input: Input) -> Sequential:
     # 1ST layer
     model.add(Conv2D(filters=96, strides=2, kernel_size=5, activation='relu'))
     # model.add(BatchNormalization())
-    # model.add(MaxPooling2D(pool_size=3, strides=2))
+    # model.add(MaxPooling2D(pool_size=2, strides=1))
 
     # 2nd layer
     model.add(Conv2D(filters=256, padding='same', kernel_size=3, activation='relu'))
@@ -53,10 +53,10 @@ def Alex_Net(Input: Input) -> Sequential:
     model.add(Dense(9216, activation='relu'))
     model.add(Dropout(.5))
     model.add(Dense(4096, activation='relu'))
-    model.add(Dropout(.5))
-    model.add(Dense(4096, activation='relu'))
     model.add(Dropout(.4))
-    #model.add(Dense(2048, activation='relu'))
+    model.add(Dense(1024, activation='relu'))
+    #model.add(Dropout(.2))
+    #model.add(Dense(1024, activation='relu'))
 
     # output layer
     model.add(Dense(1))
@@ -66,19 +66,16 @@ def Alex_Net(Input: Input) -> Sequential:
 
 model = Alex_Net(Input=data['input'])
 
-optimizer = SGD(lr=.01)
+optimizer = SGD(lr=.001)
 METRICS = [
     'mean_squared_error',
-    'mean_absolute_error'
-#    Precision(name='precision'),
-#    Recall(name='recall')
 ]
 
 CALLBACKS = [
     ReduceLROnPlateau(monitor='loss', patience=3, verbose=1, factor=.1, min_lr=.00001)
 ]
 
-model.compile(loss='huber_loss', optimizer=optimizer, metrics=METRICS)
+model.compile(loss='mean_absolute_error', optimizer=optimizer, metrics=METRICS)
 model.summary()
 
 history = model.fit(
@@ -100,7 +97,7 @@ ax[0].plot(history.history['val_loss'], color='r', label="validation loss", axes
 legend = ax[0].legend(loc='best', shadow=True)
 
 ax[1].plot(history.history['mean_squared_error'], color='b', label="mean squared error")
-ax[1].plot(history.history['val_mean_squared_error'], color='r', label="Validation accuracy")
+ax[1].plot(history.history['val_mean_squared_error'], color='r', label="Validation MSE")
 legend = ax[1].legend(loc='best', shadow=True)
 
 plt.show()

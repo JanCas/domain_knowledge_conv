@@ -24,8 +24,8 @@ elements = ['Pr', 'Ni', 'Ru', 'Ne', 'Rb', 'Pt', 'La', 'Na', 'Nb', 'Nd',
 
 
 ### neural net config
-batch_size = 64
-epochs = 200
+batch_size = 32
+epochs = 100
 
-material_prop = 'ael_debye_temperature'
+material_prop = 'Egap'
 cbfv = 'atom2vec'
