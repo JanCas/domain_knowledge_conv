@@ -18,6 +18,7 @@ session = Session(config=config)
 
 data = generate_image_data_generators(material_prop=material_prop, cbfv=cbfv)
 
+
 def Alex_Net(Input: Input) -> Sequential:
     """
         keras implementation of AlexNet
@@ -30,7 +31,7 @@ def Alex_Net(Input: Input) -> Sequential:
 
     # 1ST layer
     model.add(Conv2D(filters=96, strides=2, kernel_size=4, activation='relu'))
-    #model.add(MaxPooling2D(pool_size=3, strides=2))
+    # model.add(MaxPooling2D(pool_size=3, strides=2))
 
     # 2nd layer
     model.add(Conv2D(filters=256, padding='same', kernel_size=3, activation='relu'))
@@ -63,24 +64,24 @@ def Alex_Net(Input: Input) -> Sequential:
 
 model = Alex_Net(Input=data['input'])
 
-optimizer = SGD(lr=.001)
+optimizer = SGD(lr=.0001)
 METRICS = [
-    'accuracy',
-    Precision(name='precision'),
-    Recall(name='recall')
+    'mean_squared_error',
+#    Precision(name='precision'),
+#    Recall(name='recall')
 ]
 
 CALLBACKS = [
-    ReduceLROnPlateau(monitor='val_loss', patience=3, verbose=1, factor=.1, min_lr=.000000001)
+    ReduceLROnPlateau(monitor='loss', patience=3, verbose=1, factor=.1, min_lr=.000000001)
 ]
 
-model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=METRICS)
+model.compile(loss='huber_loss', optimizer=optimizer, metrics=METRICS)
 model.summary()
 
 history = model.fit(
     data['train'],
     epochs=epochs,
-    steps_per_epoch= floor(data['train'].n / data['train'].batch_size),
+    steps_per_epoch=floor(data['train'].n / data['train'].batch_size),
     validation_data=data['val'],
     callbacks=CALLBACKS
 )
