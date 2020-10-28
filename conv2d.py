@@ -1,7 +1,7 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense, BatchNormalization
 from tensorflow.keras import Input
-from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 from tensorflow.compat.v1 import ConfigProto, Session
 from numpy import floor
@@ -12,7 +12,7 @@ from data_utils.pandas_creator import generate_image_data_generators
 from settings import material_prop, cbfv, epochs
 
 config = ConfigProto()
-config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 1
 session = Session(config=config)
 
 data = generate_image_data_generators(material_prop=material_prop, cbfv=cbfv)
@@ -53,8 +53,8 @@ def Alex_Net(Input: Input) -> Sequential:
     model.add(Dense(9216, activation='relu'))
     model.add(Dropout(.5))
     model.add(Dense(4096, activation='relu'))
-    model.add(Dropout(.4))
-    model.add(Dense(1024, activation='relu'))
+    model.add(Dropout(.6))
+    model.add(Dense(4096, activation='relu'))
     #model.add(Dropout(.2))
     #model.add(Dense(1024, activation='relu'))
 
@@ -66,13 +66,13 @@ def Alex_Net(Input: Input) -> Sequential:
 
 model = Alex_Net(Input=data['input'])
 
-optimizer = SGD(lr=.001)
+optimizer = SGD(lr=.01)
 METRICS = [
     'mean_squared_error',
 ]
 
 CALLBACKS = [
-    ReduceLROnPlateau(monitor='loss', patience=3, verbose=1, factor=.1, min_lr=.00001)
+    ReduceLROnPlateau(monitor='val_loss', patience=3, verbose=1, factor=.1, min_lr=.00001)
 ]
 
 model.compile(loss='mean_absolute_error', optimizer=optimizer, metrics=METRICS)
