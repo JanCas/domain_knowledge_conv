@@ -24,8 +24,12 @@ elements = ['Pr', 'Ni', 'Ru', 'Ne', 'Rb', 'Pt', 'La', 'Na', 'Nb', 'Nd',
 
 
 ### neural net config
-batch_size = 32
-epochs = 100
+batch_size = 64
+epochs = 200
 
-material_prop = 'Egap'
+material_prop = 'energy_atom'
 cbfv = 'atom2vec'
+
+
+### seed
+seed_setting = 5
