@@ -24,8 +24,13 @@ elements = ['Pr', 'Ni', 'Ru', 'Ne', 'Rb', 'Pt', 'La', 'Na', 'Nb', 'Nd',
 
 
 ### neural net config
-batch_size = 64
+batch_size = 32
 epochs = 200
+
+material_prop_list = ['ael_bulk_modulus_vrh', 'ael_debye_temperature', 'ael_shear_modulus_vrh', 'agl_log10_thermal_expansion_300K',
+                      'agl_thermal_conductivity_300K', 'Egap', 'energy_atom']
+
+cbfv_list = ['atom2vec', 'jarvis', 'jarvis_shuffled', 'magpie', 'mat2vec', 'mat_shuffled', 'oliynyk', 'random_400']
 
 material_prop = 'energy_atom'
 cbfv = 'atom2vec'

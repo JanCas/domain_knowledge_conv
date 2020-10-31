@@ -73,24 +73,33 @@ def get_train_test_val_X_vector(cbfv: string, y: dict) -> array:
     index = 0
     train_x_vector = zeros((len(train), final_size, len(X_df)))
     for form_train in chemical_form_train_list:
-        train_x_vector[index] = get_x_with_chemical_formula(x_df=X_df, final_size=(final_size, len(X_df)),
+        try:
+            train_x_vector[index] = get_x_with_chemical_formula(x_df=X_df, final_size=(final_size, len(X_df)),
                                                             chem_form=form_train)
+        except KeyError:
+            print('the feature vector is missing a element in the formula {}'.format(form_train))
         index += 1
     print('forming the train x vector done')
 
     index = 0
     test_x_vector = zeros((len(test), final_size, len(X_df)))
     for form_test in chemical_form_test_list:
-        test_x_vector[index] = get_x_with_chemical_formula(x_df=X_df, final_size=(final_size, len(X_df)),
+        try:
+            test_x_vector[index] = get_x_with_chemical_formula(x_df=X_df, final_size=(final_size, len(X_df)),
                                                            chem_form=form_test)
+        except KeyError:
+            print('the feature vector is missing a element in the formula {}'.format(form_test))
         index += 1
     print('forming the test x vector done')
 
     index = 0
     val_x_vector = zeros((len(val), final_size, len(X_df)))
     for form_val in chemical_form_val_list:
-        val_x_vector[index] = get_x_with_chemical_formula(x_df=X_df, final_size=(final_size, len(X_df)),
+        try:
+            val_x_vector[index] = get_x_with_chemical_formula(x_df=X_df, final_size=(final_size, len(X_df)),
                                                           chem_form=form_val)
+        except KeyError:
+            print('the feature vector is missing a element in the formula {}'.format(form_val))
         index += 1
     print('forming the val x vector done')
 
