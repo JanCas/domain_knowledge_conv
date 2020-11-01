@@ -17,7 +17,7 @@ def get_train_test_val(material_prop: string) -> dict:
     :return: {'train': train_df, 'test': test_df, 'val': val_df}
     """
 
-    main_dir = join(BASE_DIR, 'data\material_properties', material_prop)
+    main_dir = join(BASE_DIR, 'data/material_properties', material_prop)
 
     test_df = read_csv(join(main_dir, 'test.csv'))
     test_df['chemical_form'] = test_df.apply(lambda x: x[0].split('_')[0], axis=1)
@@ -58,7 +58,7 @@ def get_train_test_val_X_vector(cbfv: string, y: dict) -> array:
     :param cbfv:
     :return:
     """
-    dir = join(BASE_DIR, 'data\element_properties', f'{cbfv}.csv')
+    dir = join(BASE_DIR, 'data/element_properties', f'{cbfv}.csv')
     train, test, val = y.values()
     chemical_form_train_list = train['chemical_form']
     chemical_form_test_list = test['chemical_form']

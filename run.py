@@ -1,5 +1,5 @@
 from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from tensorflow.compat.v1 import ConfigProto, Session
 import tensorflow as tf
 from matplotlib.pyplot import subplots, savefig
@@ -32,7 +32,9 @@ METRICS = [
 ]
 
 CALLBACKS = [
-    ReduceLROnPlateau(monitor='val_mean_absolute_error', patience=3, verbose=1, factor=.1, min_lr=.0000001)
+    ReduceLROnPlateau(monitor='val_mean_absolute_error', patience=3, verbose=1, factor=.1, min_lr=.0000001),
+    EarlyStopping(monitor='mean_absolute_error', patience=7),
+    EarlyStopping(monitor='val_absolute_error', patience=7)
 ]
 
 history_storage = {
@@ -60,8 +62,9 @@ for cbfv in cbfv_list:
         print('|   DATA DIMENSIONS: {}'.format(data['train'].x.shape))
         print('----------------------------------------------------------------------')
 
+        #hacky solution will be rewritten later
         is_big = cbfv not in ['atom2vec', 'magpie', 'oliynyk']
-        extra = cbfv in ['jarvis', 'jarvis_shuffled']
+        extra = cbfv in ['jarvis', 'jarvis_shuffled', 'random_400']
         model = Alex_Net(input=data['input'], big_input=is_big, extra=extra)
 
         model.compile(loss='huber_loss', optimizer=optimizer, metrics=METRICS)
@@ -89,18 +92,18 @@ for cbfv in cbfv_list:
 
         #saving the training plots
         fig, ax = subplots(3, 1)
-        ax[0].plot(history.history['loss'], color='b', label="Training loss")
-        ax[0].plot(history.history['val_loss'], color='r', label="validation loss", axes=ax[0])
+        ax[0].plot(history.history['loss'][3:], color='b', label="Training loss")
+        ax[0].plot(history.history['val_loss'][3:], color='r', label="validation loss", axes=ax[0])
         legend = ax[0].legend(loc='best', shadow=True)
 
-        ax[1].plot(history.history['mean_squared_error'], color='b', label="mean squared error")
-        ax[1].plot(history.history['val_mean_squared_error'], color='r', label="Validation MSE")
+        ax[1].plot(history.history['mean_squared_error'][3:], color='b', label="mean squared error")
+        ax[1].plot(history.history['val_mean_squared_error'][3:], color='r', label="Validation MSE")
         legend = ax[1].legend(loc='best', shadow=True)
 
-        ax[2].plot(history.history['mean_absolute_error'], color='b', label='mean absolute error')
-        ax[2].plot(history.history['val_mean_absolute_error'], color='r', label='val MAE')
+        ax[2].plot(history.history['mean_absolute_error'][3:], color='b', label='mean absolute error')
+        ax[2].plot(history.history['val_mean_absolute_error'][3:], color='r', label='val MAE')
         legend = ax[2].legend(loc='best', shadow=True)
-        filename = f'{material_prop}_{strftime("%m_%d_%Y_%H-%M_%S", localtime())}.jpg'
+        filename = f'{material_prop}_{strftime("%m/%d/%Y_%H:%M:%S", localtime())}.jpg'
 
         file_path = join(BASE_DIR, 'Plots', cbfv, filename)
         savefig(file_path)

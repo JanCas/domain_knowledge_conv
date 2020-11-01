@@ -48,8 +48,8 @@ def Alex_Net(input: Input, big_input: bool, extra: bool) -> Sequential:
     model.add(Dense(4096, activation='relu', kernel_regularizer='l2'))
     model.add(Dropout(.5))
     model.add(Dense(4096, activation='relu', kernel_regularizer='l2'))
-    #model.add(Dropout(.5))
-    #model.add(Dense(4096, activation='relu', kernel_regularizer='l2'))
+    model.add(Dropout(.5))
+    model.add(Dense(2048, activation='relu', kernel_regularizer='l2'))
     #model.add(Dropout(.2))
     #model.add(Dense(2048, activation='relu'))
 
