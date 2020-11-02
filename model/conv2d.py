@@ -1,5 +1,5 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense, LeakyReLU
 from tensorflow.keras import Input
 
 def Alex_Net(input: Input, big_input: bool, extra: bool) -> Sequential:
@@ -46,10 +46,10 @@ def Alex_Net(input: Input, big_input: bool, extra: bool) -> Sequential:
 
     # FC Layers
     model.add(Dense(4096, activation='relu', kernel_regularizer='l2'))
-    model.add(Dropout(.5))
+    model.add(Dropout(.4))
     model.add(Dense(4096, activation='relu', kernel_regularizer='l2'))
     model.add(Dropout(.5))
-    model.add(Dense(2048, activation='relu', kernel_regularizer='l2'))
+    model.add(Dense(4096, activation='relu'))
     #model.add(Dropout(.2))
     #model.add(Dense(2048, activation='relu'))
 
