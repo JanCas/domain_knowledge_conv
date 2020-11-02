@@ -12,7 +12,9 @@ from data_utils.pandas_creator import generate_image_data_generators
 from settings import material_prop_list, epochs, seed_setting, cbfv_list, BASE_DIR, batch_size
 from model.conv2d import Alex_Net
 from os.path import join
-from time import localtime, strftime
+from time import localtime, strftime, sleep
+from gc import collect, enable
+
 
 # setting the seed
 seed(seed_setting)
@@ -49,6 +51,9 @@ history_storage = {
     'train_MAE': [],
     'train_MSE': []
 }
+
+#enable garbage collection hopefully this fixes some memory errors
+enable()
 
 for cbfv in cbfv_list:
     for material_prop in material_prop_list:
@@ -109,16 +114,27 @@ for cbfv in cbfv_list:
             file_path = join(BASE_DIR, 'Plots', cbfv, filename)
             savefig(file_path)
 
+            #hopfuly fix the gpu memory issue
+            del model
+            del history
+        except tf.errors.ResourceExhaustedError:
+            print('THERE WAS A RESOURCE OOM ERROR JUMPING TO NEXT MODEL')
+        except MemoryError:
+            print('There was a Memory Error jumping to the next model')
+
+        try:
             # clearing memory from numpy? fix to the memory error hopefully
             del data['train'].x, data['train'].y, data['test'].x, data['test'].y, data['val'].x, data['val'].y
             del data
-            del model
-
-        except tf.errors.ResourceExhaustedError:
-            print('THERE WAS A RESOURCE OOM ERROR JUMPING TO NEXT MODEL')
-
+        except:
+            pass
         # hopfully this will clear the GPU and prevent memory errors
         tf.keras.backend.clear_session()
+        collect()
+        collect()
+
+        sleep(2)
+
 
 # constructing the Dataframe and the csv file
 df = DataFrame(history_storage)
